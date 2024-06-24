@@ -1,12 +1,17 @@
+doctype html
 html lang="en"
   head
-    meta charset="UTF-8"/
-    meta name="viewport" content="width=device-width, initial-scale=1.0"/
+    meta charset="UTF-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
     title Go Fish
   body
     h1 Join Game
-    label for="name"
-    input#name type="text"/
-    button Join 
+    form action="/join" method="post"
+      label for="name" Name:
+      input#name type="text" name="name"
+      button type="submit" Join
     | Players 
-    | John
+    br
+    ul.player-list
+      - @players.each do |player|
+        li.player-list--player = player
