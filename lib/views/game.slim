@@ -9,8 +9,9 @@ html lang="en"
     h1 Game
     | Players 
     br
+
     ul.player-list
-      - @players.each do |player|
+      - players.each do |player|
         li.player-list--player
           b = player.name
   

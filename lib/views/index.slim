@@ -10,8 +10,3 @@ html lang="en"
       label for="name" Name:
       input#name type="text" name="name"
       button type="submit" Join
-    | Players 
-    br
-    ul.player-list
-      - @players.each do |player|
-        li.player-list--player = player.name

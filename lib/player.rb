@@ -1,7 +1,9 @@
 class Player
-  attr_reader:name
+  attr_accessor :api_key
+  attr_reader :name
 
   def initialize(name)
     @name = name
+    @api_key = ""
   end
 end

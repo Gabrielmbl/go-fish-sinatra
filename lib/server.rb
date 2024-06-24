@@ -18,25 +18,36 @@ class Server < Sinatra::Base
   use Rack::JSONBodyParser
 
 
-  def self.game
+  def game
     @@game ||= Game.new
   end
 
   get '/' do
-    @players = self.class.game.players
+    @players = game.players
     slim :index
   end
 
   post '/join' do
     player = Player.new(params['name'])
     session[:current_player] = player
-    self.class.game.add_player(player)
-    redirect '/game'
+    game.add_player(player)
+    
+    api_key = SecureRandom.hex(16)
+    player.api_key = api_key
+
+    respond_to do |f|
+      f.html { redirect '/game' }
+      f.json { json api_key: api_key }
+    end
+    
   end
 
   get '/game' do
-    redirect '/' if self.class.game.empty?
-    @players = self.class.game.players
-    slim :game, locals: { game: self.class.game, current_player: session[:current_player] }
+    redirect '/' if game.empty?
+    respond_to do |f|
+      f.html { slim :game, locals: { game: game, current_player: session[:current_player], players: game.players } }
+      f.json { json players: game.players }
+    end
+    
   end
 end

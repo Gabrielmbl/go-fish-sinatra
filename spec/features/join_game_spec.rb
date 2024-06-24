@@ -6,10 +6,15 @@ ENV['RACK_ENV'] = 'test'
 require_relative '../../lib/server'
 
 RSpec.describe Server do
+  include Rack::Test::Methods
   include Capybara::DSL
+  
+  def app; Server.new; end
+  
   before do
     Capybara.app = Server.new
   end
+
   it 'is possible to join a game' do
     visit '/'
     fill_in :name, with: 'John'
@@ -34,4 +39,19 @@ RSpec.describe Server do
     expect(session1).to have_content('Player 2')
   end  
 
+  it 'returns game status via API' do
+    post '/join', { 'name' => 'Gabriel' }.to_json, {
+      'HTTP_ACCEPT' => 'application/json',
+      'CONTENT_TYPE' => 'application/json'
+    }
+
+    api_key = JSON.parse(last_response.body)['api_key']
+    expect(api_key).not_to be_nil
+
+    get '/game', nil, {
+      'HTTP_AUTHORIZATION' => "Basic #{Base64.encode64(api_key + ':X')}",
+      'HTTP_ACCEPT' => 'application/json'
+    }
+    expect(JSON.parse(last_response.body).keys).to include 'players'
+  end
 end
