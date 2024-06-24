@@ -2,8 +2,8 @@ require 'sinatra'
 require 'sinatra/json'
 require 'sinatra/respond_with'
 require 'rack/contrib'
-# require_relative 'lib/game'
-# require_relative 'lib/player'
+require_relative 'lib/game'
+require_relative 'lib/player'
 
 # class Server < Sinatra::Base
 #   enable :sessions
@@ -17,28 +17,26 @@ class Server < Sinatra::Base
   register Sinatra::RespondWith
   use Rack::JSONBodyParser
 
-  players = []
 
   def self.game
     @@game ||= Game.new
   end
 
   get '/' do
-    @players = players
+    @players = self.class.game.players
     slim :index
   end
 
   post '/join' do
-    player = params['name']
+    player = Player.new(params['name'])
     session[:current_player] = player
-    # self.class.game.add_player(player)
-    players << player unless players.include?(player)
-    redirect '/'
-    # redirect '/game'
+    self.class.game.add_player(player)
+    redirect '/game'
   end
 
-  # get '/game' do
-  #   redirect '/' if self.class.game.empty?
-  #   slim :game, locals: { game: self.class.game, current_player: session[:current_player] }
-  # end
+  get '/game' do
+    redirect '/' if self.class.game.empty?
+    @players = self.class.game.players
+    slim :game, locals: { game: self.class.game, current_player: session[:current_player] }
+  end
 end
