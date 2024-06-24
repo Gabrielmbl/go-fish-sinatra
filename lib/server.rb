@@ -2,8 +2,8 @@ require 'sinatra'
 require 'sinatra/json'
 require 'sinatra/respond_with'
 require 'rack/contrib'
-require_relative 'lib/game'
-require_relative 'lib/player'
+require_relative 'game'
+require_relative 'player'
 
 # class Server < Sinatra::Base
 #   enable :sessions

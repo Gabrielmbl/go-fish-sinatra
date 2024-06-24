@@ -3,14 +3,14 @@ require 'rspec'
 require 'capybara'
 require 'capybara/dsl'
 ENV['RACK_ENV'] = 'test'
-require_relative '../../server'
+require_relative '../../lib/server'
 
 RSpec.describe Server do
   include Capybara::DSL
   before do
     Capybara.app = Server.new
   end
-  fit 'is possible to join a game' do
+  it 'is possible to join a game' do
     visit '/'
     fill_in :name, with: 'John'
     click_on 'Join'
@@ -32,5 +32,6 @@ RSpec.describe Server do
     expect(session2).to have_content('Player 1')
     session1.driver.refresh
     expect(session1).to have_content('Player 2')
-  end
+  end  
+
 end

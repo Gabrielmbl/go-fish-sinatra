@@ -3,6 +3,7 @@ html lang="en"
   head
     meta charset="UTF-8"
     meta name="viewport" content="width=device-width, initial-scale=1.0"
+    link rel="stylesheet" href="css/styles.css"
     title Go Fish - Game
   body
     h1 Game
@@ -10,4 +11,6 @@ html lang="en"
     br
     ul.player-list
       - @players.each do |player|
-        li.player-list--player = player.name
+        li.player-list--player
+          b = player.name
+  

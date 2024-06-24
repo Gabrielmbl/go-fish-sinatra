@@ -1,4 +1,4 @@
 # config.ru
 
-require './server'
+require './lib/server'
 run Server
