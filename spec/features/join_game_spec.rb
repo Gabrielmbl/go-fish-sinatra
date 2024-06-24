@@ -10,7 +10,7 @@ RSpec.describe Server do
   before do
     Capybara.app = Server.new
   end
-  it 'is possible to join a game' do
+  fit 'is possible to join a game' do
     visit '/'
     fill_in :name, with: 'John'
     click_on 'Join'

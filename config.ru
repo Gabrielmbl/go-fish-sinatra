@@ -1,4 +1,4 @@
 # config.ru
 
-require './go-fish-app'
-run Sinatra::Application
+require './server'
+run Server
