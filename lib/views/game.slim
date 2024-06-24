@@ -13,5 +13,11 @@ html lang="en"
     ul.player-list
       - players.each do |player|
         li.player-list--player
-          b = player.name
+          - if player.api_key == current_player.api_key
+            b = player.name
+            br
+            span API Key: 
+            span = player.api_key
+          - else
+            = player.name
   

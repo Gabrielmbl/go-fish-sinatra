@@ -5,13 +5,6 @@ require 'rack/contrib'
 require_relative 'game'
 require_relative 'player'
 
-# class Server < Sinatra::Base
-#   enable :sessions
-#   register Sinatra::RespondWith
-#   use Rack::JSONBodyParser
-# end
-
-
 class Server < Sinatra::Base
   enable :sessions
   register Sinatra::RespondWith
@@ -48,6 +41,5 @@ class Server < Sinatra::Base
       f.html { slim :game, locals: { game: game, current_player: session[:current_player], players: game.players } }
       f.json { json players: game.players }
     end
-    
   end
 end
