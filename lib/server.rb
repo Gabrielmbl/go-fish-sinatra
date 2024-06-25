@@ -25,12 +25,19 @@ class Server < Sinatra::Base
     game.players.any? { |player| player.api_key == api_key }
   end
 
+  def validate_name?
+    # TODO: Ask why binding.irb console does not delete
+    params['name'] && params['name'].length > 1
+  end
+
   get '/' do
     @players = game.players
     slim :index
   end
 
   post '/join' do
+    redirect '/' unless validate_name?
+
     player = Player.new(params['name'])
     session[:current_player] = player
 

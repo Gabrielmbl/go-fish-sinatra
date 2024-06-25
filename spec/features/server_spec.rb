@@ -81,7 +81,11 @@ RSpec.describe Server do
     expect(last_response.status).to eq(401)
   end
 
-  # TODO: Validate player name
+  it 'should not allow empty player name' do
+    visit '/'
+    click_on 'Join'
+    expect(page).to have_current_path('/')
+  end
 
   # TODO: Can players play a turn
   # What are the cases to test around taking turns
