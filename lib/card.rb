@@ -6,7 +6,7 @@ class Card
     @suit = suit
   end
 
-  def to_h
+  def as_json
     {
       rank: rank,
       suit: suit

@@ -19,9 +19,9 @@ class Book
     cards_array.count
   end
 
-  def to_h
+  def as_json
     {
-      cards_array: cards_array.map { |cards| cards.map(&:to_h) },
+      cards_array: cards_array.map { |cards| cards.map(&:as_json) },
       value: value,
       count: count
     }

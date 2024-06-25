@@ -12,12 +12,12 @@ class Player
     @books = books
   end
 
-  def to_h
+  def as_json
     {
       name: @name,
       api_key: @api_key,
-      hand: @hand.map(&:to_h),
-      books: @books.map(&:to_h)
+      hand: @hand.map(&:as_json),
+      books: @books.map(&:as_json)
     }
   end
 end

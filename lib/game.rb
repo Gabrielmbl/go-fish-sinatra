@@ -19,11 +19,11 @@ class Game
     players.empty?
   end
 
-  def to_h
+  def as_json
     {
       turn_index: @turn_index,
-      players: players.map(&:to_h),
-      deck: deck.map(&:to_h)
+      players: players.map(&:as_json),
+      deck: deck.map(&:as_json)
     }
   end
 end
