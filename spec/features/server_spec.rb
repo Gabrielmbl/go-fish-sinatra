@@ -54,6 +54,7 @@ RSpec.describe Server do
       'HTTP_AUTHORIZATION' => "Basic #{Base64.encode64(api_key + ':X')}",
       'HTTP_ACCEPT' => 'application/json'
     }
+
     expect(JSON.parse(last_response.body).keys).to include 'players'
   end
 
@@ -73,7 +74,7 @@ RSpec.describe Server do
     expect(session1).to have_content('API Key', count: 1)
   end
 
-  it 'returns 401 Unauthorized for invalid API key' do
+  it 'returns 401 unauthorized for invalid API key' do
     post '/join', { 'name' => 'Gabriel' }.to_json, {
       'HTTP_ACCEPT' => 'application/json',
       'CONTENT_TYPE' => 'application/json'
@@ -91,4 +92,9 @@ RSpec.describe Server do
 
     expect(last_response.status).to eq(401)
   end
+  # TODO: Validate player name
+  # TODO: Can players play a turn
+  # What are the cases to test around taking turns
+  #   Validating that it is your turn -> Ensure
+  # Put player and game in models, server in controller
 end

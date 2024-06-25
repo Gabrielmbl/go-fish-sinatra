@@ -10,21 +10,31 @@ class Server < Sinatra::Base
   register Sinatra::RespondWith
   use Rack::JSONBodyParser
 
+  def api_keys
+    @api_keys ||= []
+  end
+
   def game
     @@game ||= Game.new
   end
 
+  # TODO: Reset
+  def reset!
+  end
+
   def validate_api_key
-    auth_header = request.env['HTTP_AUTHORIZATION'] || session[:http_authorization]
-    return false unless auth_header
+    api_key = Rack::Auth::Basic::Request.new(request.env).credentials.first
+    return false unless api_key
 
-    encoded_key = auth_header.split(' ').last
-    decoded_key = Base64.decode64(encoded_key).split(':').first
-
-    game.players.any? { |player| player.api_key == decoded_key }
+    game.players.any? { |player| player.api_key == api_key }
   end
 
   get '/' do
+    # TODO: Move get and post into helper methods. def api_get, def api_post
+    # get '/game', nil, {
+    #   'HTTP_AUTHORIZATION' => "Basic #{Base64.encode64(invalid_api_key + ':X')}",
+    #   'HTTP_ACCEPT' => 'application/json'
+    # }
     @players = game.players
     slim :index
   end
@@ -32,27 +42,30 @@ class Server < Sinatra::Base
   post '/join' do
     player = Player.new(params['name'])
     session[:current_player] = player
+
     game.add_player(player)
 
     api_key = SecureRandom.hex(16)
     player.api_key = api_key
+    api_keys << api_key
 
     respond_to do |f|
-      f.html do
-        session[:http_authorization] = "Basic #{Base64.encode64(api_key + ':X')}"
-        redirect '/game'
-      end
+      f.html { redirect '/game' }
       f.json { json api_key: api_key }
     end
   end
 
   get '/game' do
-    halt 401, json(error: 'Unauthorized') unless validate_api_key
-
-    redirect '/' if game.empty?
+    # TODO: Check if player is present in the session
     respond_to do |f|
-      f.html { slim :game, locals: { game: game, current_player: session[:current_player], players: game.players } }
-      f.json { json players: game.players }
+      f.html do
+        redirect '/' if game.empty?
+        slim :game, locals: { game: game, current_player: session[:current_player], players: game.players }
+      end
+      f.json do
+        halt 401, json(error: 'Unauthorized') unless validate_api_key
+        json players: game.players
+      end
     end
   end
 end
