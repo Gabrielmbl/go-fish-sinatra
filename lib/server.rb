@@ -30,11 +30,6 @@ class Server < Sinatra::Base
   end
 
   get '/' do
-    # TODO: Move get and post into helper methods. def api_get, def api_post
-    # get '/game', nil, {
-    #   'HTTP_AUTHORIZATION' => "Basic #{Base64.encode64(invalid_api_key + ':X')}",
-    #   'HTTP_ACCEPT' => 'application/json'
-    # }
     @players = game.players
     slim :index
   end

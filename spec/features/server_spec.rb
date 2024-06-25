@@ -42,18 +42,12 @@ RSpec.describe Server do
   end
 
   it 'returns game status via API' do
-    post '/join', { 'name' => 'Gabriel' }.to_json, {
-      'HTTP_ACCEPT' => 'application/json',
-      'CONTENT_TYPE' => 'application/json'
-    }
+    api_post
 
     api_key = JSON.parse(last_response.body)['api_key']
     expect(api_key).not_to be_nil
 
-    get '/game', nil, {
-      'HTTP_AUTHORIZATION' => "Basic #{Base64.encode64(api_key + ':X')}",
-      'HTTP_ACCEPT' => 'application/json'
-    }
+    api_get(api_key)
 
     expect(JSON.parse(last_response.body).keys).to include 'players'
   end
@@ -75,23 +69,32 @@ RSpec.describe Server do
   end
 
   it 'returns 401 unauthorized for invalid API key' do
-    post '/join', { 'name' => 'Gabriel' }.to_json, {
-      'HTTP_ACCEPT' => 'application/json',
-      'CONTENT_TYPE' => 'application/json'
-    }
+    api_post
 
     api_key = JSON.parse(last_response.body)['api_key']
     expect(api_key).not_to be_nil
 
     invalid_api_key = 'invalid_key'
 
-    get '/game', nil, {
-      'HTTP_AUTHORIZATION' => "Basic #{Base64.encode64(invalid_api_key + ':X')}",
-      'HTTP_ACCEPT' => 'application/json'
-    }
+    api_get(invalid_api_key)
 
     expect(last_response.status).to eq(401)
   end
+
+  def api_get(api_key)
+    get '/game', nil, {
+      'HTTP_AUTHORIZATION' => "Basic #{Base64.encode64(api_key + ':X')}",
+      'HTTP_ACCEPT' => 'application/json'
+    }
+  end
+
+  def api_post
+    post '/join', { 'name' => 'Gabriel' }.to_json, {
+      'HTTP_ACCEPT' => 'application/json',
+      'CONTENT_TYPE' => 'application/json'
+    }
+  end
+
   # TODO: Validate player name
   # TODO: Can players play a turn
   # What are the cases to test around taking turns
