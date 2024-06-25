@@ -18,6 +18,11 @@ class Server < Sinatra::Base
     @@game ||= Game.new
   end
 
+  def self.reset!
+    @@api_keys = nil
+    @@game = nil
+  end
+
   def validate_api_key
     api_key = Rack::Auth::Basic::Request.new(request.env).username
     return false unless api_key
