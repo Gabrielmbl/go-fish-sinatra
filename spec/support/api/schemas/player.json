@@ -1,0 +1,29 @@
+{
+  "id": "file:/player.json#",
+  "type": "object",
+  "required": [
+    "name",
+    "hand",
+    "books"
+  ],
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "api_key": {
+      "type": "string"
+    },
+    "hand": {
+      "type": "array",
+      "items": {
+        "$ref": "file:/card.json#"
+      }
+    },
+    "books": {
+      "type": "array",
+      "items": {
+        "$ref": "file:/card.json#"
+      }
+    }
+  }
+}

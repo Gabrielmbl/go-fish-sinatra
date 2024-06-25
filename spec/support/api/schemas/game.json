@@ -1,0 +1,26 @@
+{
+  "id": "file:/game.json#",
+  "type": "object",
+  "required": [
+    "turn_index",
+    "players",
+    "deck"
+  ],
+  "properties": {
+    "turn_index": {
+      "type": "integer"
+    },
+    "players": {
+      "type": "array",
+      "items": {
+        "$ref": "file:/player.json#"
+      }
+    },
+    "deck": {
+      "type": "array",
+      "items": {
+        "$ref": "file:/card.json#"
+      }
+    }
+  }
+}

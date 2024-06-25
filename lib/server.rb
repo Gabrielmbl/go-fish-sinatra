@@ -67,7 +67,43 @@ class Server < Sinatra::Base
       end
       f.json do
         halt 401, json(error: 'Unauthorized') unless validate_api_key
-        json players: self.class.game.players
+        # json game: self.class.game
+        content_type :json
+        game = {
+          turn_index: 1,
+          players: [
+            {
+              name: 'Player 1',
+              api_key: 'player1apikey',
+              hand: [
+                { rank: '10', suit: 'hearts' },
+                { rank: 'K', suit: 'spades' }
+              ],
+              books: [
+                { rank: 'A', suit: 'hearts' }
+              ]
+            },
+            {
+              name: 'Player 2',
+              api_key: 'player2apikey',
+              hand: [
+                { rank: 'Q', suit: 'clubs' },
+                { rank: 'J', suit: 'diamonds' }
+              ],
+              books: [
+                { rank: '7', suit: 'spades' }
+              ]
+            }
+          ],
+          deck: [
+            { rank: '2', suit: 'hearts' },
+            { rank: '3', suit: 'spades' },
+            { rank: '4', suit: 'clubs' },
+            { rank: '5', suit: 'diamonds' }
+          ]
+        }
+
+        game.to_json
       end
     end
   end

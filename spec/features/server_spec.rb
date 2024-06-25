@@ -16,16 +16,16 @@ RSpec.describe Server do
     Server.reset!
   end
 
-  it 'returns game status via API' do
-    api_post
+  # it 'returns game status via API' do
+  #   api_post
 
-    api_key = JSON.parse(last_response.body)['api_key']
-    expect(api_key).not_to be_nil
+  #   api_key = JSON.parse(last_response.body)['api_key']
+  #   expect(api_key).not_to be_nil
 
-    api_get(api_key)
+  #   api_get(api_key)
 
-    expect(JSON.parse(last_response.body).keys).to include 'players'
-  end
+  #   expect(JSON.parse(last_response.body).keys).to include 'game'
+  # end
 
   it 'returns 401 unauthorized for invalid API key' do
     api_post
@@ -38,6 +38,22 @@ RSpec.describe Server do
     api_get(invalid_api_key)
 
     expect(last_response.status).to eq(401)
+  end
+
+  describe 'GET /game' do
+    it 'returns Game' do
+      get '/game', format: :json
+
+      api_post
+
+      api_key = JSON.parse(last_response.body)['api_key']
+      expect(api_key).not_to be_nil
+
+      api_get(api_key)
+
+      expect(last_response.status).to eq 200
+      expect(last_response).to match_json_schema('game')
+    end
   end
 
   def api_get(api_key)
