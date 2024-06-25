@@ -10,28 +10,27 @@ class Server < Sinatra::Base
   register Sinatra::RespondWith
   use Rack::JSONBodyParser
 
-  def api_keys
-    @api_keys ||= []
+  def self.api_keys
+    @@api_keys ||= []
   end
 
-  def game
+  def self.game
     @@game ||= Game.new
   end
 
   def validate_api_key
-    api_key = Rack::Auth::Basic::Request.new(request.env).credentials.first
+    api_key = Rack::Auth::Basic::Request.new(request.env).username
     return false unless api_key
 
-    game.players.any? { |player| player.api_key == api_key }
+    self.class.game.players.any? { |player| player.api_key == api_key }
   end
 
   def validate_name?
-    # TODO: Ask why binding.irb console does not delete
     params['name'] && params['name'].length > 1
   end
 
   get '/' do
-    @players = game.players
+    @players = self.class.game.players
     slim :index
   end
 
@@ -41,11 +40,11 @@ class Server < Sinatra::Base
     player = Player.new(params['name'])
     session[:current_player] = player
 
-    game.add_player(player)
+    self.class.game.add_player(player)
 
     api_key = SecureRandom.hex(16)
     player.api_key = api_key
-    api_keys << api_key
+    self.class.api_keys << api_key
 
     respond_to do |f|
       f.html { redirect '/game' }
@@ -56,12 +55,14 @@ class Server < Sinatra::Base
   get '/game' do
     respond_to do |f|
       f.html do
-        redirect '/' if game.empty? || session[:current_player].nil?
-        slim :game, locals: { game: game, current_player: session[:current_player], players: game.players }
+        redirect '/' if self.class.game.empty? || session[:current_player].nil?
+        slim :game,
+             locals: { game: self.class.game, current_player: session[:current_player],
+                       players: self.class.game.players }
       end
       f.json do
         halt 401, json(error: 'Unauthorized') unless validate_api_key
-        json players: game.players
+        json players: self.class.game.players
       end
     end
   end

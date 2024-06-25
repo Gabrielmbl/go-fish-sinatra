@@ -6,18 +6,37 @@ html lang="en"
     link rel="stylesheet" href="css/styles.css"
     title Go Fish - Game
   body
+    .player-api 
+      | API Key: 
+      span = current_player.api_key
+
     h1 Game
     | Players 
-    br
 
     ul.player-list
       - players.each do |player|
         li.player-list--player
           - if player.api_key == current_player.api_key
             b = player.name
-            br
-            span API Key: 
-            span = player.api_key
+            ul.hand
+              h2 Your Hand
+              -player.hand.each do |card|
+                li.card
+                  = card.rank 
+                  |, 
+                  = card.suit
+            ul.books 
+              -player.books.each do |card|
+                li.card
+                  = card.rank 
+                  |, 
+                  = card.suit
           - else
             = player.name
+            ul.books 
+              -player.books.each do |card|
+                li.card
+                  = card.rank 
+                  |, 
+                  = card.suit
   
