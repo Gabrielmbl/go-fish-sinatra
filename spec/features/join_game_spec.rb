@@ -8,9 +8,11 @@ require_relative '../../lib/server'
 RSpec.describe Server do
   include Rack::Test::Methods
   include Capybara::DSL
-  
-  def app; Server.new; end
-  
+
+  def app
+    Server.new
+  end
+
   before do
     Capybara.app = Server.new
   end
@@ -37,7 +39,7 @@ RSpec.describe Server do
     expect(session2).to have_content('Player 1')
     session1.driver.refresh
     expect(session1).to have_content('Player 2')
-  end  
+  end
 
   it 'returns game status via API' do
     post '/join', { 'name' => 'Gabriel' }.to_json, {
@@ -71,6 +73,22 @@ RSpec.describe Server do
     expect(session1).to have_content('API Key', count: 1)
   end
 
-  it 'returns 401 if API key is invalid' do
+  it 'returns 401 Unauthorized for invalid API key' do
+    post '/join', { 'name' => 'Gabriel' }.to_json, {
+      'HTTP_ACCEPT' => 'application/json',
+      'CONTENT_TYPE' => 'application/json'
+    }
+
+    api_key = JSON.parse(last_response.body)['api_key']
+    expect(api_key).not_to be_nil
+
+    invalid_api_key = 'invalid_key'
+
+    get '/game', nil, {
+      'HTTP_AUTHORIZATION' => "Basic #{Base64.encode64(invalid_api_key + ':X')}",
+      'HTTP_ACCEPT' => 'application/json'
+    }
+
+    expect(last_response.status).to eq(401)
   end
 end

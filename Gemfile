@@ -7,6 +7,7 @@ gem 'rerun'
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'slim'
+gem 'rubocop'
 
 group :test do
   gem 'capybara'
