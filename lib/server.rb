@@ -18,10 +18,6 @@ class Server < Sinatra::Base
     @@game ||= Game.new
   end
 
-  # TODO: Reset
-  def reset!
-  end
-
   def validate_api_key
     api_key = Rack::Auth::Basic::Request.new(request.env).credentials.first
     return false unless api_key
@@ -51,10 +47,9 @@ class Server < Sinatra::Base
   end
 
   get '/game' do
-    # TODO: Check if player is present in the session
     respond_to do |f|
       f.html do
-        redirect '/' if game.empty?
+        redirect '/' if game.empty? || session[:current_player].nil?
         slim :game, locals: { game: game, current_player: session[:current_player], players: game.players }
       end
       f.json do

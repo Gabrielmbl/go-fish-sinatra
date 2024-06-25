@@ -81,6 +81,13 @@ RSpec.describe Server do
     expect(last_response.status).to eq(401)
   end
 
+  # TODO: Validate player name
+
+  # TODO: Can players play a turn
+  # What are the cases to test around taking turns
+  #   Validating that it is your turn -> Ensure
+  # Put player and game in models, server in controller
+
   def api_get(api_key)
     get '/game', nil, {
       'HTTP_AUTHORIZATION' => "Basic #{Base64.encode64(api_key + ':X')}",
@@ -94,10 +101,4 @@ RSpec.describe Server do
       'CONTENT_TYPE' => 'application/json'
     }
   end
-
-  # TODO: Validate player name
-  # TODO: Can players play a turn
-  # What are the cases to test around taking turns
-  #   Validating that it is your turn -> Ensure
-  # Put player and game in models, server in controller
 end
