@@ -20,21 +20,6 @@ html lang="en"
           p 
             - if is_current_player 
               strong = player.name 
-              - if player == game_current_player
-                p
-                  span What's your move?
-                  form action="/game" method="post"
-                    div
-                      label for="player_to_ask" Select Player:
-                      select#player_to_ask name="player_to_ask"
-                        - game.players.each do |other_player|
-                          - unless other_player.api_key == current_player.api_key
-                            option value="#{other_player.api_key}" = other_player.name
-                    div
-                      label for="card_rank" Select Rank:
-                      select#card_rank name="card_rank"
-                        - player.hand.each do |card|
-                              option value="#{card.rank}" = card.rank
             - else 
               = player.name 
           
@@ -50,4 +35,21 @@ html lang="en"
                 - player.books.each do |book|
                   - book.cards_array.each do |card|
                     li.book #{card.rank} of #{card.suit}
-    
+
+    - if game.started && current_player.api_key == game.current_player.api_key
+      .actions
+        span What's your move?
+        form action="/game" method="post"
+          div
+            label for="player_to_ask" Select Player:
+            select#player_to_ask name="player_to_ask"
+              - game.players.each do |other_player|
+                - unless other_player.api_key == current_player.api_key
+                  option value="#{other_player.api_key}" = other_player.name
+          div
+            label for="card_rank" Select Rank:
+            select#card_rank name="card_rank"
+              - game.current_player.hand.each do |card|
+                    option value="#{card.rank}" = card.rank
+          button type="submit" Ask
+      
