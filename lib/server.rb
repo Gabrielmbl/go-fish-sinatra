@@ -40,6 +40,15 @@ class Server < Sinatra::Base
     params['name'] && params['name'].length > 1
   end
 
+  def create_player
+    player = Player.new(params['name'])
+    session[:current_player] = player
+
+    self.class.game.add_player(player)
+    self.class.api_keys << player.api_key
+    player
+  end
+
   get '/' do
     @players = self.class.game.players
     slim :index
@@ -48,11 +57,7 @@ class Server < Sinatra::Base
   post '/join' do
     redirect '/' unless validate_name?
 
-    player = Player.new(params['name'])
-    session[:current_player] = player
-
-    self.class.game.add_player(player)
-    self.class.api_keys << player.api_key
+    player = create_player
 
     start_game_if_possible
 
