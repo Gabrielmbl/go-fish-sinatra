@@ -1,6 +1,7 @@
 require_relative 'player'
 require_relative 'card'
 require_relative 'books'
+require_relative 'Deck'
 
 class Game
   attr_accessor :players, :turn_index, :deck
@@ -8,7 +9,7 @@ class Game
   def initialize
     @players = []
     @turn_index = 0
-    @deck = []
+    @deck = Deck.new
   end
 
   def add_player(player)
@@ -23,7 +24,7 @@ class Game
     {
       turn_index: @turn_index,
       players: players.map(&:as_json),
-      deck: deck.map(&:as_json)
+      deck: deck.as_json
     }
   end
 end
