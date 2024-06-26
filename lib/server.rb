@@ -52,19 +52,17 @@ class Server < Sinatra::Base
     session[:current_player] = player
 
     self.class.game.add_player(player)
+    self.class.api_keys << player.api_key
 
-    api_key = SecureRandom.hex(16)
-    player.api_key = api_key
-    self.class.api_keys << api_key
+    start_game_if_possible
 
     respond_to do |f|
       f.html { redirect '/game' }
-      f.json { json api_key: api_key }
+      f.json { json api_key: player.api_key }
     end
   end
 
   get '/game' do
-    start_game_if_possible
     respond_to do |f|
       f.html do
         redirect '/' if self.class.game.empty? || session[:current_player].nil?
@@ -78,4 +76,6 @@ class Server < Sinatra::Base
       end
     end
   end
+  # post '/game' do
+  # end
 end
