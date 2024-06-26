@@ -159,12 +159,28 @@ RSpec.describe Server do
     session1, session2 = create_sessions_and_players
     game = Server.game
     refresh_sessions([session1, session2])
-    expect(session1).to have_content("What's your move?")
-    expect(session2).not_to have_content("What's your move?")
+    session_has_content(session1, ["What's your move?"])
+    session_does_not_have_content(session2, ["What's your move?"])
     Server.game.update_current_player
     refresh_sessions([session1, session2])
-    expect(session1).not_to have_content("What's your move?")
-    expect(session2).to have_content("What's your move?")
+    session_does_not_have_content(session1, ["What's your move?"])
+  end
+
+  it 'should show other players as options for asking for a rank' do
+    session1, session2 = create_sessions_and_players
+    game = Server.game
+    refresh_sessions([session1, session2])
+    expect(session1).to have_select('player_to_ask', with_options: ['Player 2'])
+    expect(session1).not_to have_select('player_to_ask', with_options: ['Player 1'])
+  end
+
+  it 'should show ranks in the current player hand as options for asking for a rank' do
+    session1, session2 = create_sessions_and_players
+    game = Server.game
+    game.players.first.hand = [Card.new('2', 'Clubs'), Card.new('3', 'Clubs')]
+    refresh_sessions([session1, session2])
+    expect(session1).to have_select('card_rank', with_options: %w[2 3])
+    expect(session1).not_to have_select('card_rank', with_options: %w[4 5])
   end
 
   # TODO: Can players play a turn
