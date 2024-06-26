@@ -1,6 +1,6 @@
 # spec/deck_spec.rb
 
-require_relative '../lib/deck'
+require_relative '../../lib/deck'
 
 RSpec.describe Deck do
   let(:deck) { Deck.new }

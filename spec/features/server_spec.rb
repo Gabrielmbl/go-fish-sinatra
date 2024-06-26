@@ -57,6 +57,10 @@ RSpec.describe Server do
     end
   end
 
+  # describe 'POST /game' do
+
+  # end
+
   def api_get(api_key)
     get '/game', nil, {
       'HTTP_AUTHORIZATION' => "Basic #{Base64.encode64(api_key + ':X')}",
@@ -92,16 +96,7 @@ RSpec.describe Server do
   end
 
   it 'allows multiple players to join game' do
-    session1 = Capybara::Session.new(:rack_test, Server.new)
-    session2 = Capybara::Session.new(:rack_test, Server.new)
-    [session1, session2].each_with_index do |session, index|
-      player_name = "Player #{index + 1}"
-      session.visit '/'
-      session.fill_in :name, with: player_name
-      session.click_on 'Join'
-      expect(session).to have_content('Players')
-      expect(session).to have_css('strong', text: player_name)
-    end
+    session1, session2 = create_sessions_and_players
     expect(session2).to have_content('Player 1')
     session1.driver.refresh
     expect(session1).to have_content('Player 2')
@@ -181,6 +176,22 @@ RSpec.describe Server do
     refresh_sessions([session1, session2])
     expect(session1).to have_select('card_rank', with_options: %w[2 3])
     expect(session1).not_to have_select('card_rank', with_options: %w[4 5])
+  end
+
+  describe 'POST /game' do
+    it 'should make a card to be added to one player and removed from the other' do
+      session1, session2 = create_sessions_and_players
+      game = Server.game
+      game.players.first.hand = [Card.new('2', 'Clubs'), Card.new('3', 'Clubs')]
+      game.players.last.hand = [Card.new('3', 'Diamonds')]
+      refresh_sessions([session1, session2])
+      session1.select 'Player 2', from: 'player_to_ask'
+      session1.select '3', from: 'card_rank'
+      session1.click_on 'Ask'
+      refresh_sessions([session1, session2])
+      session_has_content(session1, ['3 of Diamonds'])
+      session_does_not_have_content(session2, ['3 of Diamonds'])
+    end
   end
 
   # TODO: Can players play a turn

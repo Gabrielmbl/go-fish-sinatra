@@ -7,7 +7,7 @@ class Player
 
   def initialize(name, hand: [], books: [])
     @name = name
-    @api_key = ''
+    @api_key = SecureRandom.hex(16)
     @hand = hand
     @books = books
   end
