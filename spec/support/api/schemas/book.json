@@ -1,5 +1,5 @@
 {
-  "id": "file:/books.json#",
+  "id": "file:/book.json#",
   "type": "object",
   "required": [
     "cards_array"

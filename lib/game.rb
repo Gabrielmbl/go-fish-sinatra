@@ -1,6 +1,6 @@
 require_relative 'player'
 require_relative 'card'
-require_relative 'books'
+require_relative 'book'
 require_relative 'Deck'
 
 class Game
@@ -18,6 +18,17 @@ class Game
 
   def empty?
     players.empty?
+  end
+
+  def start
+    deck.shuffle
+    deal_to_players
+  end
+
+  def deal_to_players
+    players.each do |player|
+      STARTING_CARD_COUNT.times { player.add_to_hand([deck.deal]) }
+    end
   end
 
   def as_json

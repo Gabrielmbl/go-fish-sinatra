@@ -4,6 +4,8 @@ require 'capybara'
 require 'capybara/dsl'
 ENV['RACK_ENV'] = 'test'
 require_relative '../../lib/server'
+require_relative '../../lib/card'
+require_relative '../../lib/book'
 
 RSpec.describe Server do
   include Rack::Test::Methods
@@ -134,6 +136,33 @@ RSpec.describe Server do
     expect(session2).to have_content('Your Hand', count: 1)
   end
 
+  it "should display only the current player's hand" do
+    session1, session2 = create_sessions_and_players
+    game = Server.game
+    game.players.first.hand = [Card.new('2', 'Clubs'), Card.new('3', 'Clubs')]
+    game.players.last.hand = [Card.new('4', 'Clubs'), Card.new('5', 'Clubs')]
+    refresh_sessions([session1, session2])
+    session_has_content(session1, ['2 of Clubs', '3 of Clubs'])
+    session_has_content(session2, ['4 of Clubs', '5 of Clubs'])
+    session_does_not_have_content(session1, ['4 of Clubs', '5 of Clubs'])
+  end
+
+  it "should display everyone's books" do
+    session1, session2 = create_sessions_and_players
+    game = Server.game
+    game.players.first.books = [Book.new([Card.new('2', 'Clubs'),
+                                          Card.new('2', 'Diamonds'), Card.new('2', 'Hearts'), Card.new('2', 'Spades')])]
+    game.players.last.books = [Book.new([Card.new('4', 'Clubs'),
+                                         Card.new('4', 'Diamonds'), Card.new('4', 'Hearts'), Card.new('4', 'Spades')])]
+    refresh_sessions([session1, session2])
+    session_has_content(session1,
+                        ['2 of Clubs', '2 of Diamonds', '2 of Hearts', '2 of Spades', '4 of Clubs', '4 of Diamonds', '4 of Hearts',
+                         '4 of Spades'])
+    session_has_content(session2,
+                        ['2 of Clubs', '2 of Diamonds', '2 of Hearts', '2 of Spades', '4 of Clubs', '4 of Diamonds', '4 of Hearts',
+                         '4 of Spades'])
+  end
+
   # TODO: Can players play a turn
   # What are the cases to test around taking turns
   #   Validating that it is your turn -> Ensure
@@ -149,5 +178,21 @@ RSpec.describe Server do
       expect(session).to have_content('Players')
     end
     [session1, session2]
+  end
+
+  def refresh_sessions(sessions)
+    sessions.each { |session| session.driver.refresh }
+  end
+
+  def session_has_content(session, content)
+    content.each do |c|
+      expect(session).to have_content(c)
+    end
+  end
+
+  def session_does_not_have_content(session, content)
+    content.each do |c|
+      expect(session).not_to have_content(c)
+    end
   end
 end

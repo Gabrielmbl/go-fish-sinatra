@@ -22,7 +22,7 @@
     "books": {
       "type": "array",
       "items": {
-        "$ref": "file:/books.json#"
+        "$ref": "file:/book.json#"
       }
     }
   }

@@ -23,20 +23,22 @@ html lang="en"
               -player.hand.each do |card|
                 li.card
                   = card.rank 
-                  |, 
+                  |  of 
                   = card.suit
             ul.books 
-              -player.books.each do |card|
-                li.card
-                  = card.rank 
-                  |, 
-                  = card.suit
+              -player.books.each do |book|
+                -book.cards_array.each do |card|
+                  li
+                    = card.rank 
+                    |  of 
+                    = card.suit
           - else
             = player.name
             ul.books 
-              -player.books.each do |card|
-                li.card
-                  = card.rank 
-                  |, 
-                  = card.suit
+              -player.books.each do |book|
+                -book.cards_array.each do |card|
+                  li
+                    = card.rank 
+                    |  of 
+                    = card.suit
   

@@ -1,5 +1,5 @@
 require_relative 'card'
-require_relative 'books'
+require_relative 'book'
 
 class Player
   attr_accessor :api_key, :hand, :books
