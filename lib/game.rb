@@ -13,7 +13,7 @@ class Game
     @players = players
     @deck = Deck.new
     @started = false
-    @current_player = nil
+    @current_player = players.first
   end
 
   def add_player(player)
@@ -41,6 +41,12 @@ class Game
     current_player_index = players.index(current_player)
     next_player_index = (current_player_index + 1) % players.length
     self.current_player = players[next_player_index]
+  end
+
+  def play_round(opponent, rank)
+    cards = opponent.hand.select { |card| card.rank == rank }
+    current_player.add_to_hand(cards)
+    opponent.remove_by_rank(rank)
   end
 
   def as_json
