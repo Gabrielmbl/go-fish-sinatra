@@ -23,6 +23,19 @@ html lang="en"
               - if player == game_current_player
                 p
                   span What's your move?
+                  form action="/make_move" method="post"
+                    div
+                      label for="player_to_ask" Select Player:
+                      select#player_to_ask name="player_to_ask"
+                        - game.players.each do |other_player|
+                          - unless other_player.api_key == current_player.api_key
+                            option value="#{other_player.api_key}" = other_player.name
+                    div
+                      label for="card_rank" Select Rank:
+                      select#card_rank name="card_rank"
+                        - Card::RANKS.each do |rank|
+                          option value="#{rank}" = rank
+                    button type="submit" Make Move
             - else 
               = player.name 
           
