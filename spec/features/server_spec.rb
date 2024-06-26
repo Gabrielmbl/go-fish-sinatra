@@ -101,7 +101,7 @@ RSpec.describe Server do
       session.fill_in :name, with: player_name
       session.click_on 'Join'
       expect(session).to have_content('Players')
-      expect(session).to have_css('b', text: player_name)
+      expect(session).to have_css('strong', text: player_name)
     end
     expect(session2).to have_content('Player 1')
     session1.driver.refresh
@@ -111,8 +111,8 @@ RSpec.describe Server do
   it 'bolds only the current player and shows their API key' do
     session1, session2 = create_sessions_and_players
     expect(session2).to have_content('Player 1')
-    expect(session1).to have_css('b', count: 1)
-    expect(session2).to have_css('b', count: 1)
+    expect(session1).to have_css('strong', count: 1)
+    expect(session2).to have_css('strong', count: 1)
     expect(session1).to have_content('API Key', count: 1)
   end
 
@@ -124,8 +124,9 @@ RSpec.describe Server do
 
   it "should display only the player's hand" do
     session1, session2 = create_sessions_and_players
-    expect(session1).to have_content('Your Hand', count: 1)
-    expect(session2).to have_content('Your Hand', count: 1)
+    refresh_sessions([session1, session2])
+    expect(session1).to have_content('Your Hand:', count: 1)
+    expect(session2).to have_content('Your Hand:', count: 1)
   end
 
   it "should display only the current player's hand" do
