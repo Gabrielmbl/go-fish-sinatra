@@ -64,10 +64,10 @@ class Server < Sinatra::Base
   end
 
   get '/game' do
+    start_game_if_possible
     respond_to do |f|
       f.html do
         redirect '/' if self.class.game.empty? || session[:current_player].nil?
-        start_game_if_possible
         slim :game,
              locals: { game: self.class.game, current_player: session[:current_player],
                        players: self.class.game.players }

@@ -44,8 +44,7 @@ RSpec.describe Server do
 
   describe 'GET /game' do
     it 'returns Game' do
-      get '/game', format: :json
-
+      api_post
       api_post
 
       api_key = JSON.parse(last_response.body)['api_key']
@@ -154,6 +153,18 @@ RSpec.describe Server do
     session_has_content(session2,
                         ['2 of Clubs', '2 of Diamonds', '2 of Hearts', '2 of Spades', '4 of Clubs', '4 of Diamonds', '4 of Hearts',
                          '4 of Spades'])
+  end
+
+  it 'should display the turn actions to the current player' do
+    session1, session2 = create_sessions_and_players
+    game = Server.game
+    refresh_sessions([session1, session2])
+    expect(session1).to have_content("What's your move?")
+    expect(session2).not_to have_content("What's your move?")
+    Server.game.update_current_player
+    refresh_sessions([session1, session2])
+    expect(session1).not_to have_content("What's your move?")
+    expect(session2).to have_content("What's your move?")
   end
 
   # TODO: Can players play a turn

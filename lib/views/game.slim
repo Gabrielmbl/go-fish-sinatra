@@ -13,12 +13,16 @@ html lang="en"
     h3 Players 
 
     ul.player-list
+      - game_current_player = game.current_player
       - game.players.each do |player|
         li.player-list__player
           - is_current_player = player.api_key == current_player.api_key
           p 
             - if is_current_player 
               strong = player.name 
+              - if player == game_current_player
+                p
+                  span What's your move?
             - else 
               = player.name 
           
@@ -28,9 +32,10 @@ html lang="en"
               ul.hand
                 - player.hand.each do |card|
                   li.cards #{card.rank} of #{card.suit}
-            h3 Books:
-            ul.books 
-              - player.books.each do |book|
-                - book.cards_array.each do |card|
-                  li.book #{card.rank} of #{card.suit}
+            - if player.books.any?
+              h3 Books:
+              ul.books 
+                - player.books.each do |book|
+                  - book.cards_array.each do |card|
+                    li.book #{card.rank} of #{card.suit}
     
