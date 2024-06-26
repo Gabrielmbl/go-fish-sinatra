@@ -7,38 +7,30 @@ html lang="en"
     title Go Fish - Game
   body
     .player-api 
-      | API Key: 
-      span = current_player.api_key
+      span Your API Key: #{current_player.api_key}
 
     h1 Game
-    | Players 
+    h3 Players 
 
     ul.player-list
-      - players.each do |player|
-        li.player-list--player
-          - if player.api_key == current_player.api_key
-            b = player.name
-            ul.hand
-              h2 Your Hand
-              -player.hand.each do |card|
-                li.card
-                  = card.rank 
-                  |  of 
-                  = card.suit
+      - game.players.each do |player|
+        li.player-list__player
+          - is_current_player = player.api_key == current_player.api_key
+          p 
+            - if is_current_player 
+              strong = player.name 
+            - else 
+              = player.name 
+          
+          - if game.started 
+            - if is_current_player 
+              h3 Your Hand:
+              ul.hand
+                - player.hand.each do |card|
+                  li.cards #{card.rank} of #{card.suit}
+            h3 Books:
             ul.books 
-              -player.books.each do |book|
-                -book.cards_array.each do |card|
-                  li
-                    = card.rank 
-                    |  of 
-                    = card.suit
-          - else
-            = player.name
-            ul.books 
-              -player.books.each do |book|
-                -book.cards_array.each do |card|
-                  li
-                    = card.rank 
-                    |  of 
-                    = card.suit
-  
+              - player.books.each do |book|
+                - book.cards_array.each do |card|
+                  li.book #{card.rank} of #{card.suit}
+    
