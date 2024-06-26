@@ -81,6 +81,14 @@ class Server < Sinatra::Base
       end
     end
   end
-  # post '/game' do
-  # end
+
+  post '/game' do
+    opponent = self.class.game.players.find { |player| player.api_key == params['player_to_ask'] }
+    self.class.game.play_round(opponent, params['card_rank'])
+
+    respond_to do |f|
+      f.html { redirect '/game' }
+      f.json { json self.class.game.as_json }
+    end
+  end
 end
