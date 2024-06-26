@@ -23,6 +23,12 @@ class Server < Sinatra::Base
     @@game = nil
   end
 
+  def start_game_if_possible
+    return if self.class.game.started
+
+    self.class.game.start if self.class.game.players.count >= Game::MIN_PLAYERS
+  end
+
   def validate_api_key
     api_key = Rack::Auth::Basic::Request.new(request.env).username
     return false unless api_key
@@ -61,6 +67,7 @@ class Server < Sinatra::Base
     respond_to do |f|
       f.html do
         redirect '/' if self.class.game.empty? || session[:current_player].nil?
+        start_game_if_possible
         slim :game,
              locals: { game: self.class.game, current_player: session[:current_player],
                        players: self.class.game.players }
