@@ -179,18 +179,32 @@ RSpec.describe Server do
   end
 
   describe 'POST /game' do
+    before do
+      @session1, @session2 = create_sessions_and_players
+      @game = Server.game
+      @game.players.first.hand = [Card.new('2', 'Clubs'), Card.new('3', 'Clubs')]
+      @game.players.last.hand = [Card.new('3', 'Diamonds'), Card.new('5', 'Clubs')]
+      refresh_sessions([@session1, @session2])
+    end
+
     it 'should make a card to be added to one player and removed from the other' do
-      session1, session2 = create_sessions_and_players
-      game = Server.game
-      game.players.first.hand = [Card.new('2', 'Clubs'), Card.new('3', 'Clubs')]
-      game.players.last.hand = [Card.new('3', 'Diamonds')]
-      refresh_sessions([session1, session2])
-      session1.select 'Player 2', from: 'player_to_ask'
-      session1.select '3', from: 'card_rank'
-      session1.click_on 'Ask'
-      refresh_sessions([session1, session2])
-      session_has_content(session1, ['3 of Diamonds'])
-      session_does_not_have_content(session2, ['3 of Diamonds'])
+      ask_for_card(@session1, 'Player 2', '3')
+      refresh_sessions([@session1, @session2])
+      session_has_content(@session1, ['3 of Diamonds'])
+      session_does_not_have_content(@session2, ['3 of Diamonds'])
+    end
+
+    it 'should make player fish if the rank is not in the opponent hand' do
+      ask_for_card(@session1, 'Player 2', '4')
+      refresh_sessions([@session1, @session2])
+      session_has_content(@session1, ['A of Clubs'])
+      session_does_not_have_content(@session2, ['A of Clubs'])
+    end
+
+    def ask_for_card(session, player, rank)
+      session.select player, from: 'player_to_ask'
+      session.select rank, from: 'card_rank'
+      session.click_on 'Ask'
     end
   end
 
